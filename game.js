@@ -675,6 +675,7 @@ function openLeaderboardPage(score, playerName) {
         //Добавляем обработчик для кнопки "Начать новую игру"
         const startNewGameButton = leaderboardWindow.document.getElementById("startNewGame");
         startNewGameButton.addEventListener("click", () => {
+            resetLocalStorage();
             leaderboardWindow.close();
             //Возврат на главную страницу игры
             window.location.href = "gamestyle.html"; 
