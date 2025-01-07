@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Котики</title>
+    <style>
+
+    body {
+        margin: 0;
+        height: 100%;
+        width: 100%;
+        font-family: Arial, Helvetica, sans-serif;
+        background-color: #fbeff5;
+        color: #4a4a4a;
+            
+    }
+
+    .title {
+        font-size: 28px;
+        margin-bottom: 20px;
+        -webkit-text-fill-color: #0000;
+        background: linear-gradient(98deg, #8c56ff 22.71%, #c956ff 73.26%);
+        -webkit-background-clip: text;
+    }
+
+    .button {
+        width: 100%;
+        height: 60px;
+        padding: 10px;
+        font-size: 20px;
+        border: none;
+        border-radius: 50px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    #startNewGame {
+        background: linear-gradient(88.17deg, #57a8f0 4.2%, #805cea 99.52%);
+        border: none;
+        border-radius: 50px;
+        color: #fff;
+        height: 60px;
+        font-size: 20px;
+        margin-bottom: 20px;
+        margin-top: 20px;
+    }
+
+    .button-enabled {
+        background: linear-gradient(88.17deg, #57a8f0 4.2%, #805cea 99.52%);
+        color: white;
+    }
+
+    .button-enabled:hover {
+        background: linear-gradient(88.17deg, #57a8f0 4.2%, #805cea 99.52%);
+    }
+
+    .player-list table {
+        table-layout: auto; 
+        border-collapse: collapse; 
+        background: #ffffff;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        overflow: hidden; 
+    }
+
+    .player-list th,
+    .player-list td {
+        table-layout: fixed;
+        background: #ffffff;
+        border-radius: 8px;
+        padding: 12px 16px; 
+        text-align: left; 
+        border-bottom: 1px solid #ddd; 
+        font-size: 16px; 
+        color: #333; 
+    }
+
+    .player-list th {
+        background-color: #ffffff;
+        font-weight: bold; 
+    }
+
+    .player-list th:first-child,
+    .player-list td:first-child {
+        width: 90%; 
+    }
+
+    header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #ffd1e8;
+        }
+
+        header .logo-link {
+            text-decoration: none;
+        }
+
+        .menu {
+            display: none; 
+            position: absolute;
+            background-color: #ffd1e8;
+            list-style: none;
+            padding: 10px;
+            margin: 0;
+            right: 20px;
+            border: 1px solid #f5a6c9;
+            z-index: 10;
+        }
+
+        .menu-btn {
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .menu.active {
+            display: block; 
+        }
+
+        .menu li a {
+            color: #4a4a4a; 
+            text-decoration: none; 
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .content h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .content p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+         footer {
+            background-color: #f5a6c9;
+            padding: 10px 20px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .cat-logo {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            margin: 20px auto;
+        }
+
+        .cat-logo .face {
+            width: 100%;
+            height: 100%;
+            background-color: #f477b5;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .cat-logo .ear {
+            position: absolute;
+            background-color: #f477b5;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            transform: rotate(45deg);
+        }
+
+        .cat-logo .left-ear {
+            width: 50px;
+            height: 50px;
+            top: -10px;
+            left: -15px;
+            transform: rotate(-45deg);
+        }
+
+        .cat-logo .right-ear {
+            width: 50px;
+            height: 50px;
+            top: -10px;
+            right: -15px;
+        }
+
+        .cat-logo .eye {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #000;
+            border-radius: 50%;
+        }
+
+        .cat-logo .left-eye {
+            top: 20px;
+            left: 15px;
+        }
+
+        .cat-logo .right-eye {
+            top: 20px;
+            right: 15px;
+        }
+
+        .cat-logo .nose {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #000;
+            clip-path: polygon(50% 0%, 15% 100%, 85% 100%);
+            top: 35px;
+            left: 25px;
+            transform: rotate(180deg)
+        }
+
+      /* Адаптация под разные экраны */
+        /* Для экрана шире 768px */
+        @media (min-width: 768px) {
+            header {
+                padding: 10px 40px;
+            }
+
+            .content h1 {
+                font-size: 36px;
+            }
+
+            .blocks .block {
+                flex: 1 1 calc(25% - 20px);
+            }
+        }
+
+        /* Для экрана меньше 768px */
+        @media (max-width: 768px) {
+            header {
+                flex-wrap: wrap;
+                text-align: center;
+            }
+
+            .menu-btn {
+                font-size: 20px;
+            }
+
+            .blocks .block {
+                flex: 1 1 calc(50% - 20px);
+            }
+        }
+
+        /* Для экрана меньше 480px */
+        @media (max-width: 480px) {
+            .content h1 {
+                font-size: 24px;
+            }
+
+            .blocks .block {
+                flex: 1 1 100%;
+            }
+
+            .cat-logo {
+                width: 40px;
+                height: 40px;
+                position: relative;
+                margin: 0 auto;
+            }
+
+            .cat-logo .face {
+                width: 40px;
+                height: 40px;
+            }
+
+            .cat-logo .ear {
+                width: 15px;
+                height: 15px;
+                position: absolute;
+            }
+
+            .cat-logo .left-ear {
+                top: -5px; 
+                left: -5px;
+            }
+
+            .cat-logo .right-ear {
+                top: -5px;
+                right: -5px;
+            }
+
+            .cat-logo .eye {
+                width: 4px; 
+                height: 4px;
+                background-color: black;
+                border-radius: 50%;
+                position: absolute;
+        
+            }
+
+            .cat-logo .left-eye {
+                top: 35%;
+                left: 30%;
+            }
+
+            .cat-logo .right-eye {
+                top: 35%;
+                right: 30%;
+            }
+
+            .cat-logo .nose {
+                top: 25px;
+                left: 15px;
+                width: 10px; 
+                height: 5px;
+            }
+        }
+
+
+
+
+
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header>
+        <a href="/" class="logo-link">
+            <div class="cat-logo">
+                <div class="ear left-ear"></div>
+                <div class="ear right-ear"></div>
+                <div class="face"></div>
+                <div class="eye left-eye"></div>
+                <div class="eye right-eye"></div>
+                <div class="nose"></div>
+            </div>
+        </a>
+        <nav>
+            <div class="menu-btn">☰</div>
+            <ul class="menu">
+                <li><a href="task2page.html">Задание 2</a></li>
+                <li><a href="task3page.html">Задание 3</a></li>
+                <li><a href="task4page.html">Задание 4</a></li>
+                <li><a href="task5page.html">Задание 5</a></li>
+                <li><a href="gamestyle.html">Курсовая работа</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Контент -->
+    <main class="content">
+        <h1 class="title">Рейтинг игроков</h1>
+        <table class="player-list">
+            <thead>
+                <tr>
+                    <th>Имя</th>
+                    <th>Баллы</th>
+                </tr>
+            </thead>
+            <tbody id="playerListBody">
+
+            </tbody>
+        </table>
+        <button id="startNewGame" class="button">Начать новую игру</button>
+        </main>
+        <footer>
+            © 2024 Имя Фамилия, Группа XXX
+        </footer>
+        <script src="game.js"></script>
+        <script src="script.js"></script>
+    </body>
+    </html>

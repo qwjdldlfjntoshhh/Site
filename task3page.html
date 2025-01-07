@@ -1,0 +1,421 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Котики</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #fbeff5;
+            color: #4a4a4a;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #ffd1e8;
+        }
+
+        header .logo-link {
+            text-decoration: none;
+        }
+
+        header .logo {
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            color: #fff;
+        }
+
+        .menu {
+            display: none; 
+            position: absolute;
+            background-color: #ffd1e8;
+            list-style: none;
+            padding: 10px;
+            margin: 0;
+            right: 20px;
+            border: 1px solid #f5a6c9;
+            z-index: 10;
+        }
+
+        .menu-btn {
+            cursor: pointer;
+            font-size: 24px;
+        }
+
+        .menu.active {
+            display: block; 
+        }
+
+        .menu li a {
+            color: #4a4a4a; 
+            text-decoration: none; 
+        }
+
+        .content {
+            padding: 20px;
+        }
+
+        .content h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+        }
+
+        .content p {
+            font-size: 18px;
+            line-height: 1.6;
+        }
+
+         footer {
+            background-color: #f5a6c9;
+            padding: 10px 20px;
+            text-align: center;
+            color: #fff;
+        }
+
+        .cat-logo {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            margin: 20px auto;
+        }
+
+        .cat-logo .face {
+            width: 100%;
+            height: 100%;
+            background-color: #f477b5;
+            border-radius: 50%;
+            position: relative;
+        }
+
+        .cat-logo .ear {
+            position: absolute;
+            background-color: #f477b5;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+            transform: rotate(45deg);
+        }
+
+        .cat-logo .left-ear {
+            width: 50px;
+            height: 50px;
+            top: -10px;
+            left: -15px;
+            transform: rotate(-45deg);
+        }
+
+        .cat-logo .right-ear {
+            width: 50px;
+            height: 50px;
+            top: -10px;
+            right: -15px;
+        }
+
+        .cat-logo .eye {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background-color: #000;
+            border-radius: 50%;
+        }
+
+        .cat-logo .left-eye {
+            top: 20px;
+            left: 15px;
+        }
+
+        .cat-logo .right-eye {
+            top: 20px;
+            right: 15px;
+        }
+
+        .cat-logo .nose {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #000;
+            clip-path: polygon(50% 0%, 15% 100%, 85% 100%);
+            top: 35px;
+            left: 25px;
+            transform: rotate(180deg)
+        }
+
+        /* Настроки основного контейнера */
+        .flex-container {
+            display: flex;
+            justify-content: center; /* Выравнивание по центру горизонтали */
+            align-items: center; /* Выравнивание по центру вертикали */
+            width: 200px;
+            height: 200px;
+            position: relative;
+            overflow: hidden;
+            background: url('/toy1.jpg') no-repeat center center;
+            background-size: cover; 
+            transition: filter 1s ease; 
+  
+        }
+
+        /* Стили при нажатии */
+        .flex-container:active {
+            filter: sepia(100%);
+        }
+
+        /* Настройка элементов контейнера */
+        .flex-item {
+            width: 100%;
+            height: 100%;
+        }
+
+        #boy {
+            position: absolute;
+            left: -100px;
+            bottom: 5px;
+            width: 50%; 
+            height: auto;
+            transition: left 1s ease-out;
+        }
+
+        #pinwheel-container {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            display: none; 
+        }
+
+        #pinwheel-top {
+            position: absolute;
+            top: 50px;
+            left: 70px;
+            width: 65px;
+            height: 65px;
+            transform-origin: center; /* Центр вращения находится в центре элемента */
+            z-index: 2;
+        }
+
+        /* Нижняя часть вертушки */
+        #pinwheel-bottom {
+            position: absolute;
+            top: 80px;
+            left: 90px;
+            width: 50px;
+            height: 60px;
+        }
+
+        /* Стили для текста 1 */
+        #text {
+            position: absolute;
+            left: -150px;
+            bottom: 10px; 
+            font-size: 14px; 
+            color: rgb(191, 190, 190); 
+            font-family: 'Times New Roman'; 
+            transition: left 1s ease-out;
+        }
+
+        /* Стили для текста 2 */
+        #text2 {
+            position: absolute;
+            top: 50px; 
+            left: -12px; 
+            font-size: 16px; 
+            color: rgb(0, 255, 0); 
+            font-family: 'Times New Roman'; 
+            transform: rotate(-35deg); 
+            opacity: 0; /* Текст скрыт по умолчанию */
+            transition: opacity 0.5s ease; 
+        }
+
+        /* Показываем текст при нажатии */
+        .flex-item:active #text2 {
+            opacity: 1; 
+        }
+
+        /* Анимация при наведении и нажатии */
+        .flex-item:hover #boy {
+            left: 100px;
+            animation: run-slow 2s ease-out forwards;
+        }
+
+        .flex-container:hover #text {
+            left: 30px;
+            animation: run-slow 2s ease-out forwards; 
+        }
+
+        .flex-container:active #text {
+            opacity: 0; 
+            transition: opacity 0.5s ease; 
+        }
+
+        /* Смена изображения при нажатии */
+        .flex-container:active #boy {
+            content: url('toy3.png');
+        }
+
+        /* Активация вертушки */
+        .flex-item:active #pinwheel-container {
+            display: block; 
+        }
+
+        .flex-item:active #pinwheel-top {
+            animation: spin 1s linear infinite; /* Вращаем только верхнюю часть */
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+        /* Адаптация под разные экраны */
+        /* Для экрана шире 768px */
+        @media (min-width: 768px) {
+            header {
+                padding: 10px 40px;
+            }
+
+            .content h1 {
+                font-size: 36px;
+            }
+
+            .blocks .block {
+                flex: 1 1 calc(25% - 20px);
+            }
+        }
+
+        /* Для экрана меньше 768px */
+        @media (max-width: 768px) {
+            header {
+                flex-wrap: wrap;
+                text-align: center;
+            }
+
+            .menu-btn {
+                font-size: 20px;
+            }
+
+            .blocks .block {
+                flex: 1 1 calc(50% - 20px);
+            }
+        }
+
+        /* Для экрана меньше 480px */
+        @media (max-width: 480px) {
+            .content h1 {
+                font-size: 24px;
+            }
+
+            .blocks .block {
+                flex: 1 1 100%;
+            }
+
+            .cat-logo {
+                width: 40px;
+                height: 40px;
+                position: relative;
+                margin: 0 auto;
+            }
+
+            .cat-logo .face {
+                width: 40px;
+                height: 40px;
+            }
+
+            .cat-logo .ear {
+                width: 15px;
+                height: 15px;
+                position: absolute;
+            }
+
+            .cat-logo .left-ear {
+                top: -5px; 
+                left: -5px;
+            }
+
+            .cat-logo .right-ear {
+                top: -5px;
+                right: -5px;
+            }
+
+            .cat-logo .eye {
+                width: 4px; 
+                height: 4px;
+                background-color: black;
+                border-radius: 50%;
+                position: absolute;
+        
+            }
+
+            .cat-logo .left-eye {
+                top: 35%;
+                left: 30%;
+            }
+
+            .cat-logo .right-eye {
+                top: 35%;
+                right: 30%;
+            }
+
+            .cat-logo .nose {
+                top: 25px;
+                left: 15px;
+                width: 10px; 
+                height: 5px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+    <!-- Шапка -->
+    <header>
+        <a href="/" class="logo-link">
+            <div class="cat-logo">
+                <div class="ear left-ear"></div>
+                <div class="ear right-ear"></div>
+                <div class="face"></div>
+                <div class="eye left-eye"></div>
+                <div class="eye right-eye"></div>
+                <div class="nose"></div>
+            </div>
+        </a>
+        <nav>
+            <div class="menu-btn">☰</div>
+            <ul class="menu">
+                <li><a href="task2page.html">Задание 2</a></li>
+                <li><a href="task3page.html">Задание 3</a></li>
+                <li><a href="task4page.html">Задание 4</a></li>
+                <li><a href="task5page.html">Задание 5</a></li>
+                <li><a href="gamestyle.html">Курсовая работа</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Контент -->
+    <main class="content">
+        <h1>Задание 3</h1>
+        <div class="flex-container">
+            <div class="flex-item" id="flex-box" >
+                <div id="text">Игрушки оптом</div>
+                <div id="text2">Самые веселые игрушки!</div>
+                <img src="toy2.png" alt="Мальчик" id="boy" />
+                <div id="pinwheel-container">
+                    <img src="toy5.png" alt="Верхняя часть вертушки" id="pinwheel-top" />
+                    <img src="toy4.png" alt="Нижняя часть вертушки" id="pinwheel-bottom" />
+                </div>
+            </div>
+        </div>        
+        </main>
+
+        <!-- Подвал -->
+        <footer>
+            © 2024 Имя Фамилия, Группа XXX
+        </footer>
+        <script src="script.js"></script>
+    </body>
+    </html>
