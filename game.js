@@ -56,7 +56,7 @@ const animalCollection = [
 ];
 
 const correctAnswersList = [
-    "Кошка", "Собака", "Тигр", "Слон", "Лев", "Медведь", "Лошадь", "Пингвин", "Крокодил", "Змея", "Волк", "Котёнок", "Утка", "Собака"
+    "Кошка", "Собака", "Тигр", "Слон", "Лев", "Медведь", "Лошадь", "Крокодил", "Змея", "Волк", "Котёнок", "Собака"
 ];
 
 //Функция для перемешивания массива, чтобы слова выкидывались в рандомном порядке
@@ -111,8 +111,17 @@ function renderLevelOneGame() {
             </div>
             <p id="score" class="score">Очки: ${gameData.score}</p>
             <button id="endGameButton" class="button">Завершить игру</button>
+            <button id="skipLevelButton" class="button">Пропустить уровень</button>
         </div>
     `;
+
+    document.getElementById("skipLevelButton").addEventListener("click", () => {
+        clearInterval(gameData.timer); 
+        const requiredScore = 80; 
+        gameData.score = requiredScore; 
+        gameData.levelOneScore = requiredScore; 
+        endIteration(true); 
+    });
 
     //Событие для кнопки окончания игры
     document.getElementById("endGameButton").addEventListener("click", () => {
@@ -147,6 +156,7 @@ function setupGameOptions() {
         option.addEventListener("click", () => {
             //Проверяем содержатся ли правильные ответы, если да меняем цвет кнопки на зеленый, добавляем очки, увеличиваем счетчик и обновляем счет
             if (correctAnswersList.includes(option.textContent)) {
+                option.style.animation = "correctAnswer 0.5s ease";
                 option.style.backgroundColor = "#48b608";
                 gameData.score += 10;
                 gameData.currentCorrectAnswers++;
@@ -159,6 +169,7 @@ function setupGameOptions() {
                 }
             } else {
                 //Если ответ неверный, меняем цвет кнопки, отнимаем баллы, обновляем счет
+                option.style.animation = "wrongAnswer 0.5s ease";
                 option.style.backgroundColor = "#FF2A5F";
                 gameData.score -= 20;
                 if (gameData.score < 0) {
@@ -168,6 +179,10 @@ function setupGameOptions() {
             }
             //После выбора кнопка неактивна, повторно ее выбрать нельзя
             option.disabled = true;
+            // Удаляем анимацию после её завершения
+            option.addEventListener("animationend", () => {
+                option.style.animation = ""; // Сброс анимации
+            });
         });
     });
 }
@@ -322,6 +337,62 @@ function renderLevelTwoIntro() {
     });
 }
 
+function animateCorrectInput(inputElement) {
+    let scale = 1;
+    let growing = true;
+    let steps = 0;
+
+    function step() {
+        steps++;
+
+        if (growing) {
+            scale += 0.02; 
+            if (scale >= 1.15) growing = false; 
+        } else {
+            scale -= 0.02; 
+            if (scale <= 1 && steps >= 50) { 
+                inputElement.style.transform = "";
+                inputElement.style.backgroundColor = ""; 
+                return;
+            }
+        }
+
+        inputElement.style.transform = `scale(${scale})`;
+        inputElement.style.backgroundColor = "#48b608"; 
+        requestAnimationFrame(step);
+    }
+
+    step();
+}
+
+function animateWrongInput(inputElement) {
+    let angle = 0;
+    let direction = 1;
+    //Для отслеживания завершения цикла
+    let steps = 0; 
+
+    function step() {
+        steps++;
+
+        angle += 2 * direction; 
+        inputElement.style.transform = `rotate(${angle}deg)`;
+        inputElement.style.backgroundColor = "#FF2A5F"; 
+
+        if (angle >= 10 || angle <= -10) {
+            direction *= -1; 
+        }
+
+        if (steps >= 30 && Math.abs(angle) < 1 && direction === -1) {
+            inputElement.style.transform = "";
+            inputElement.style.backgroundColor = ""; 
+            return;
+        }
+        requestAnimationFrame(step);
+    }
+
+    step();
+}
+
 //Функция для начала игры второго уровня
 function renderLevelTwoGame() {
     const app = document.getElementById("app");
@@ -354,6 +425,7 @@ function renderLevelTwoGame() {
             <input type="text" id="wordInput" class="input" placeholder="Введите слово">
             <button id="submitWordButton" class="button" disabled>Проверить</button>
             <button id="endLevelButton" class="button">Завершить уровень</button>
+            <button id="skipLevelButton" class="button">Пропустить уровень</button>
             <p id="timer" class="timer">Время: ${timeLimit}</p>
             <p id="score" class="score">Очки: ${totalScore}</p>
         </div>
@@ -376,11 +448,19 @@ function renderLevelTwoGame() {
         renderEndLevelScreen();
     });
 
+    document.getElementById("skipLevelButton").addEventListener("click", () => {
+        clearInterval(gameData.timer); 
+        const requiredScore = 120; 
+        gameData.levelTwoScore = requiredScore;
+        endIterationTwo(true); 
+    });
+
     //Настройка события для проверки правильности ввода
     submitButton.addEventListener("click", () => {
         const userInput = wordInput.value.trim().toLowerCase();
         //Сравниваем ввод со словами
         if (currentWords.includes(userInput)) {
+            animateCorrectInput(wordInput);
             //Если слово введено верно, добавляем баллы
             gameData.levelTwoScore = parseInt(gameData.levelTwoScore || 0, 10) + 20;
             gameData.currentCorrectAnswers++;
@@ -394,6 +474,7 @@ function renderLevelTwoGame() {
                 endIterationTwo(true);
             }
         } else {
+            animateWrongInput(wordInput);
             //Неверный ввод слова
             gameData.levelTwoScore = parseInt(gameData.levelTwoScore || 0, 10) + 20;
             if (gameData.levelTwoScore < 0) gameData.levelTwoScore = 0; 
@@ -423,7 +504,6 @@ function endIterationTwo(success) {
         renderEndLevelScreen();
     }
 }
-
 
 //Экран досрочного окончания второго уровня
 function renderEndLevelScreen() {
@@ -482,6 +562,60 @@ function renderLevelThreeIntro() {
     });
 }
 
+function animateCorrectArea(area) {
+    let scale = 1;
+    let growing = true;
+    let steps = 0;
+
+    function step() {
+        steps++;
+        if (growing) {
+            scale += 0.02;
+            if (scale >= 1.1) growing = false;
+        } else {
+            scale -= 0.02;
+            if (scale <= 1 && steps >= 30) {
+                area.style.transform = "";
+                area.style.backgroundColor = "#f9f9f9"; 
+                return;
+            }
+        }
+
+        area.style.transform = `scale(${scale})`;
+        area.style.backgroundColor = "#48b608"; 
+        requestAnimationFrame(step);
+    }
+
+    step();
+}
+
+function animateWrongArea(area) {
+    let angle = 0;
+    let direction = 1;
+    let steps = 0;
+
+    function step() {
+        steps++;
+        angle += 2 * direction;
+        area.style.transform = `rotate(${angle}deg)`;
+        area.style.backgroundColor = "#FF2A5F"; 
+
+        if (angle >= 10 || angle <= -10) {
+            direction *= -1;
+        }
+
+        if (steps >= 30 && Math.abs(angle) < 1) {
+            area.style.transform = "";
+            area.style.backgroundColor = "#f9f9f9"; 
+            return;
+        }
+
+        requestAnimationFrame(step);
+    }
+
+    step();
+}
+
 //Функция для игры третьего уровня
 function renderLevelThreeGame() {
     const app = document.getElementById("app");
@@ -505,7 +639,7 @@ function renderLevelThreeGame() {
     const selectedIncorrectWords = shuffleArray([...incorrectWords]).slice(0, 5); 
     const allWords = shuffleArray([...selectedCorrectWords, ...selectedIncorrectWords]); 
     //Время уменьшается на 5 сек с каждой новой итерацией
-    const timeLimit = 30 - (gameData.currentIteration - 1) * 5;
+    const timeLimit = 60 - (gameData.currentIteration - 1) * 5;
     //Штраф за ошибку увеличивается пропорционально текущей итерации    
     const penalty = -10 * gameData.currentIteration;
 
@@ -522,8 +656,15 @@ function renderLevelThreeGame() {
         <p id="timer" class="timer">Время: ${timeLimit}</p>
         <p id="score" class="score">Очки: ${totalScore}</p>
         <button id="endLevelButton" class="button">Завершить уровень</button>
+        <button id="skipLevelButton" class="button">Пропустить уровень</button>
     </div>
     `;
+    document.getElementById("skipLevelButton").addEventListener("click", () => {
+        clearInterval(gameData.timer); 
+        const requiredScore = 150; 
+        gameData.levelThreeScore = requiredScore;
+        endIterationThree(true); 
+    });
     //Запускаем таймер
     startTimer(timeLimit, document.getElementById("timer"));
     //Вызываем функцию, контролирующую логику перетаскивания слов
@@ -569,11 +710,14 @@ function setupDragAndDrop(correctWords, penalty) {
             //Если слова распределены правильно - добавляем баллы
             if (area.id === "incorrectArea" && !correctWords.includes(droppedWord)) {
                 gameData.levelThreeScore = (gameData.levelThreeScore || 0) + 10;
+                animateCorrectArea(area); // Анимация для правильной области
             } else if (area.id === "correctArea" && correctWords.includes(droppedWord)) {
                 gameData.levelThreeScore = (gameData.levelThreeScore || 0) + 10;
+                animateCorrectArea(area); // Анимация для правильной области
             //Если слово перенесено неверно - применяем штраф
             } else {
                 gameData.levelThreeScore = (gameData.levelThreeScore || 0) + penalty; 
+                animateWrongArea(area); // Анимация для неправильной области
             }
             //Недопускаем отрицательные очки
             if (gameData.levelThreeScore < 0) gameData.levelThreeScore = 0;
@@ -675,18 +819,9 @@ function openLeaderboardPage(score, playerName) {
         //Добавляем обработчик для кнопки "Начать новую игру"
         const startNewGameButton = leaderboardWindow.document.getElementById("startNewGame");
         startNewGameButton.addEventListener("click", () => {
-            resetLocalStorage();
             leaderboardWindow.close();
             //Возврат на главную страницу игры
             window.location.href = "gamestyle.html"; 
         });
     };
 }
-
-
-
-
-
-
-
-
