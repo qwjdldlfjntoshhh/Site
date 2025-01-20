@@ -196,7 +196,6 @@ function endIteration(success) {
         if (gameData.currentIteration > 5) {
             //Сохраняем очки первого уровня
             localStorage.setItem("levelOneScore", gameData.score.toString()); 
-            console.log("Очки первого уровня сохранены:", gameData.score);
             //Вызываем функцию окончания игры
             endGame(gameData.score >= 60);
         } else {
@@ -275,7 +274,7 @@ function endGame(success, finalScore = gameData.score) {
         </div>
     `;
 
-    //Обработчик для кнопки перезапуска
+    //Обработчик для кнопки запуска
     const restartButton = document.getElementById("restartButton");
     restartButton.addEventListener("click", () => {
         if (success) {
@@ -476,7 +475,7 @@ function renderLevelTwoGame() {
         } else {
             animateWrongInput(wordInput);
             //Неверный ввод слова
-            gameData.levelTwoScore = parseInt(gameData.levelTwoScore || 0, 10) + 20;
+            gameData.levelTwoScore = parseInt(gameData.levelTwoScore || 0, 10) - 20;
             if (gameData.levelTwoScore < 0) gameData.levelTwoScore = 0; 
             const updatedTotalScore = parseInt(localStorage.getItem("levelOneScore"), 10) + gameData.levelTwoScore;
             document.getElementById("score").textContent = `Очки: ${updatedTotalScore}`;
@@ -825,3 +824,11 @@ function openLeaderboardPage(score, playerName) {
         });
     };
 }
+
+
+
+
+
+
+
+
