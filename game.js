@@ -798,7 +798,7 @@ function openLeaderboardPage(score, playerName) {
         localStorage.setItem("leaderboard", JSON.stringify(players));
     }
     //Открываем новое окно с итогами
-    const leaderboardWindow = window.open("gameratesep.html", "_blank");
+    const leaderboardWindow = window.open("gamerate.html", "_blank");
 
     //Проверяем, что страница загрузилась
     leaderboardWindow.onload = () => {
@@ -820,7 +820,7 @@ function openLeaderboardPage(score, playerName) {
         startNewGameButton.addEventListener("click", () => {
             leaderboardWindow.close();
             //Возврат на главную страницу игры
-            window.location.href = "gamestylesep.html"; 
+            window.location.href = "gamestyle.html"; 
         });
     };
 }
